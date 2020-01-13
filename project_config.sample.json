@@ -1,0 +1,12 @@
+{
+  "name": "Project Name",
+  "to": [
+    "SEND-TO-EMAIL_ADDRESS",
+    "SEND-TO-EMAIL_ADDRESS"
+  ],
+  "last_sent_date_time_in_millis": -1,
+  "cc": [
+    "TESTER-EMAIL-ID-1",
+    "TESTER-EMAIL-ID-2"
+  ]
+}
