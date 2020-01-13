@@ -1,8 +1,2 @@
 # send-build
-A CLI tool to send APK file to your test team
-
-## Usage
-
-```console
-
-```
+A CLI tool to send APK file to your test team with changelog.
