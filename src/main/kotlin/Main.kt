@@ -12,9 +12,9 @@ import java.io.IOException
 import java.io.InputStreamReader
 
 
-private val CORE_CONFIG_SAMPLE_FILE_NAME = "core_config.sample.json"
-private val CORE_CONFIG_FILE_NAME = "core_config.json"
-private val PROJECT_CONFIG_SAMPLE_FILE_NAME = "project_config.sample.json"
+private const val CORE_CONFIG_SAMPLE_FILE_NAME = "core_config.sample.json"
+private const val CORE_CONFIG_FILE_NAME = "core_config.json"
+private const val PROJECT_CONFIG_SAMPLE_FILE_NAME = "project_config.sample.json"
 private const val FEATURE = "🌟"
 private const val FIX = "🐛"
 private const val FIX_OR_FEATURE = "$FEATURE\\|$FIX"
