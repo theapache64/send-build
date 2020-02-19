@@ -17,7 +17,6 @@ private const val CORE_CONFIG_FILE_NAME = "core_config.json"
 private const val PROJECT_CONFIG_SAMPLE_FILE_NAME = "project_config.sample.json"
 private const val FEATURE = "🌟"
 private const val FIX = "🐛"
-private const val FIX_OR_FEATURE = "$FEATURE\\|$FIX"
 
 lateinit var currentDir: String
 lateinit var projectConfig: ProjectConfig
@@ -86,8 +85,7 @@ fun main(args: Array<String>) {
                         send(mailBody, fileName)
                         println("👍 Sent")
                     } else {
-                        // no commits changed
-                        logError("No new issue/release commit found. Rejecting build delivery")
+                        logError("No new commits found. Rejecting build delivery")
                     }
 
                 } else {
@@ -153,17 +151,27 @@ fun getMailBody(commits: List<String>): String {
     if (commits.isNotEmpty()) {
         val features = mutableListOf<String>()
         val fixes = mutableListOf<String>()
+        val others = mutableListOf<String>()
 
         commits.forEach { commit ->
-            if (commit.contains(FIX)) {
-                fixes.add(commit)
-            } else if (commit.contains(FEATURE)) {
-                features.add(commit)
+
+            when {
+                commit.contains(FIX) -> {
+                    fixes.add(commit)
+                }
+                commit.contains(FEATURE) -> {
+                    features.add(commit)
+                }
+                else -> {
+                    others.add(commit)
+                }
             }
+
         }
 
         println("🌟 ${features.size} feature(s)")
         println("🐛 ${fixes.size} fix(es)")
+        println("🌀 ${others.size} other(s)")
 
         mailBodyBuilder.append(
             """
@@ -209,6 +217,20 @@ fun getMailBody(commits: List<String>): String {
             }
         }
 
+        if (others.isNotEmpty()) {
+            mailBodyBuilder.append(
+                """
+                    
+                <b><u>Other</u></b>
+                
+            """.trimIndent()
+            )
+
+            others.forEach { other ->
+                mailBodyBuilder.append(abbr(other)).append("\n")
+            }
+        }
+
     }
 
     mailBodyBuilder.append(
@@ -241,7 +263,7 @@ fun getCommits(): List<String> {
             null
         }
 
-        val commitCommand = getReportCommand(from, FIX_OR_FEATURE)
+        val commitCommand = getReportCommand(from)
         return executeCommand(commitCommand)
 
     } else {
@@ -287,10 +309,9 @@ fun executeCommand(command: String): List<String> {
     return result
 }
 
-fun getReportCommand(sinceDate: String?, grepVal: String?): String {
+fun getReportCommand(sinceDate: String?): String {
     val since = if (sinceDate != null) "--since=\"$sinceDate\"" else ""
-    val grep = if (grepVal != null) "--grep=\"$grepVal\" -i" else ""
-    return "git log $grep $since --format=\"- %s DATE!%ar - %ad!\" --date=format:\"%d %b %I:%M:%S:%p\" | sort -V"
+    return "git log $since --format=\"- %s DATE!%ar - %ad!\" --date=format:\"%d %b %I:%M:%S:%p\" | sort -V"
 }
 
 fun logError(msg: String) {
